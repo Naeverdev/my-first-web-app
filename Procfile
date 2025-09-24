@@ -1,1 +1,1 @@
-web: gunicorn app:app --bind 0.0.0.0:$PORT --forwarded-allow-ips="*"
+web: gunicorn app:app --bind 127.0.0.1:$PORT --access-logfile - --error-logfile -
