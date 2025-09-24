@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>🏃‍♂️ Activity Templates</h1>
+
+<p>Create base checklists for different outdoor activities. Later you'll be able to create specific trip checklists based on these templates.</p>
+
+{% if templates %}
+    {% for template in templates %}
+    <div class="gear-card">
+        <h3>{{ template.name }}</h3>
+        <p>{{ template.description }}</p>
+        <div>
+            <a href="#" class="btn btn-secondary">View Checklist</a>
+            <a href="#" class="btn">Create Trip</a>
+        </div>
+    </div>
+    {% endfor %}
+{% else %}
+    <div style="text-align: center; margin: 40px 0;">
+        <h3>No activity templates yet!</h3>
+        <p>Activity templates will help you create consistent checklists for different types of trips.</p>
+    </div>
+{% endif %}
+
+<div style="margin-top: 30px; padding: 20px; background: #f0f8ff; border-radius: 8px;">
+    <h3>🚀 Coming Soon:</h3>
+    <ul>
+        <li>Link gear items to activity templates</li>
+        <li>Create specific trip checklists</li>
+        <li>Check off items on trip day</li>
+        <li>Track what you actually took vs. planned</li>
+    </ul>
+</div>
+{% endblock %}

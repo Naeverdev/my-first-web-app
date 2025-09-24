@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div style="text-align: center; margin: 40px 0;">
+    <h1>🏔️ Welcome to Your Outdoor Gear Manager!</h1>
+    <p>Keep track of your outdoor gear and create checklists for your adventures</p>
+</div>
+
+<div class="stats">
+    <div class="stat-card">
+        <div class="stat-number">{{ total_items }}</div>
+        <div>Total Gear Items</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-number">3</div>
+        <div>Activity Types</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-number">0</div>
+        <div>Upcoming Trips</div>
+    </div>
+</div>
+
+{% if recent_gear %}
+<h2>📦 Recently Added Gear</h2>
+{% for item in recent_gear %}
+<div class="gear-card">
+    <h3>{{ item.name }}</h3>
+    <p><strong>Brand:</strong> {{ item.brand or 'Not specified' }} | 
+       <strong>Category:</strong> {{ item.category }} | 
+       <strong>Weight:</strong> {{ item.weight_grams }}g</p>
+    <p><strong>Condition:</strong> {{ item.condition }}</p>
+    {% if item.notes %}
+    <p><strong>Notes:</strong> {{ item.notes }}</p>
+    {% endif %}
+</div>
+{% endfor %}
+{% endif %}
+
+<div style="text-align: center; margin: 40px 0;">
+    <a href="{{ url_for('add_gear') }}" class="btn">Add Your First Gear Item</a>
+    <a href="{{ url_for('gear_list') }}" class="btn btn-secondary">View All Gear</a>
+</div>
+{% endblock %}

@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>➕ Add New Gear</h1>
+
+<form method="POST">
+    <div class="form-group">
+        <label for="name">Item Name *</label>
+        <input type="text" id="name" name="name" required placeholder="e.g. Black Diamond Spot 400">
+    </div>
+    
+    <div class="form-group">
+        <label for="brand">Brand</label>
+        <input type="text" id="brand" name="brand" placeholder="e.g. Black Diamond, Petzl, REI">
+    </div>
+    
+    <div class="form-group">
+        <label for="category">Category *</label>
+        <select id="category" name="category" required>
+            <option value="">Select Category</option>
+            <option value="Lighting">Lighting</option>
+            <option value="Clothing">Clothing</option>
+            <option value="Shelter">Shelter</option>
+            <option value="Cooking">Cooking</option>
+            <option value="Navigation">Navigation</option>
+            <option value="Safety">Safety</option>
+            <option value="Climbing">Climbing</option>
+            <option value="Hiking">Hiking</option>
+            <option value="Camping">Camping</option>
+            <option value="Electronics">Electronics</option>
+            <option value="Other">Other</option>
+        </select>
+    </div>
+    
+    <div class="form-group">
+        <label for="weight_grams">Weight (grams)</label>
+        <input type="number" id="weight_grams" name="weight_grams" placeholder="e.g. 88">
+    </div>
+    
+    <div class="form-group">
+        <label for="condition">Condition</label>
+        <select id="condition" name="condition">
+            <option value="Excellent">Excellent</option>
+            <option value="Good" selected>Good</option>
+            <option value="Fair">Fair</option>
+            <option value="Poor">Poor</option>
+            <option value="Needs Repair">Needs Repair</option>
+        </select>
+    </div>
+    
+    <div class="form-group">
+        <label for="notes">Notes</label>
+        <textarea id="notes" name="notes" rows="3" placeholder="Any additional notes about this item..."></textarea>
+    </div>
+    
+    <div style="margin-top: 20px;">
+        <button type="submit" class="btn">Add Gear Item</button>
+        <a href="{{ url_for('gear_list') }}" class="btn btn-secondary">Cancel</a>
+    </div>
+</form>
+{% endblock %}

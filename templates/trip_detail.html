@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>🏔️ {{ trip.name }}</h1>
+
+<div class="gear-card" style="background: #e8f5e8;">
+    <h3>Trip Details</h3>
+    <p><strong>Activity:</strong> {{ trip.activity_type }}</p>
+    {% if trip.location %}<p><strong>Location:</strong> {{ trip.location }}</p>{% endif %}
+    {% if trip.start_date %}
+    <p><strong>Dates:</strong> {{ trip.start_date.strftime('%Y-%m-%d') }}
+    {% if trip.end_date and trip.end_date != trip.start_date %}
+     to {{ trip.end_date.strftime('%Y-%m-%d') }}
+    {% endif %}
+    </p>
+    {% endif %}
+    {% if trip.notes %}<p><strong>Notes:</strong> {{ trip.notes }}</p>{% endif %}
+</div>
+
+<h2>📋 Gear Checklist ({{ trip.gear_items|length }} items)</h2>
+
+{% if trip.gear_items %}
+    <div style="margin: 20px 0;">
+        <strong>Total Weight:</strong> 
+        {% set total_weight = trip.gear_items | sum(attribute='weight_grams') %}
+        {{ total_weight }}g ({{ "%.1f"|format(total_weight/1000) }}kg)
+    </div>
+    
+    {% for item in trip.gear_items %}
+    {% set is_packed = packed_status.get(item.id, False) %}
+    <!-- DEBUG: Item {{ item.id }}, Packed: {{ is_packed }}, Status: {{ packed_status }} -->
+    <div class="gear-card" style="background: {% if is_packed %}#d4edda{% else %}#fff3cd{% endif %}">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <div style="display: flex; align-items: center; flex: 1;">
+                <input type="checkbox" style="margin-right: 15px; transform: scale(1.5);" 
+                       {% if is_packed %}checked{% endif %} disabled>
+                <div>
+                    <h3 style="{% if is_packed %}text-decoration: line-through; color: #666;{% endif %}">{{ item.name }} (DEBUG: packed={{ is_packed }})</h3>
+                    <p><strong>Category:</strong> {{ item.category }} | <strong>Weight:</strong> {{ item.weight_grams }}g</p>
+                </div>
+            </div>
+            <div style="display: flex; gap: 10px;">
+                <a href="{{ url_for('toggle_packed', trip_id=trip.id, gear_id=item.id) }}" 
+                   class="btn">{% if is_packed %}Unpack ✗{% else %}Pack ✓{% endif %}</a>
+                <a href="{{ url_for('remove_gear_from_trip', trip_id=trip.id, gear_id=item.id) }}" 
+                   class="btn btn-secondary" 
+                   onclick="return confirm('Remove this item from the checklist?')">Remove</a>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+{% else %}
+    <p>No gear added yet. Add items from your inventory below.</p>
+{% endif %}
+
+<h2>➕ Add Gear to This Trip</h2>
+
+{% if all_gear %}
+    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 15px; margin: 20px 0;">
+        {% for item in all_gear %}
+            {% if item not in trip.gear_items %}
+            <div class="gear-card" style="padding: 10px;">
+                <h4>{{ item.name }}</h4>
+                <p><small>{{ item.category }} | {{ item.weight_grams }}g</small></p>
+                <a href="{{ url_for('add_gear_to_trip', trip_id=trip.id, gear_id=item.id) }}" class="btn" style="padding: 5px 10px; font-size: 0.9em;">Add to Trip</a>
+            </div>
+            {% endif %}
+        {% endfor %}
+    </div>
+    
+    {% if trip.gear_items|length == all_gear|length %}
+    <p style="text-align: center; color: #666; font-style: italic;">All your gear is already on this trip!</p>
+    {% endif %}
+{% else %}
+    <p>You don't have any gear in your inventory yet. <a href="{{ url_for('add_gear') }}">Add some gear</a> first!</p>
+{% endif %}
+
+<div style="margin-top: 40px;">
+    <a href="{{ url_for('trips') }}" class="btn btn-secondary">Back to All Trips</a>
+</div>
+{% endblock %}

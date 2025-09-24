@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>🗓️ My Trips</h1>
+
+<div style="margin: 20px 0;">
+    <a href="{{ url_for('create_trip') }}" class="btn">Plan New Trip</a>
+</div>
+
+{% if trips %}
+    {% for trip in trips %}
+    <div class="gear-card">
+        <h3>🏔️ {{ trip.name }}</h3>
+        <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+            <div style="flex: 1;">
+                <p><strong>Activity:</strong> {{ trip.activity_type }}</p>
+                {% if trip.location %}
+                <p><strong>Location:</strong> {{ trip.location }}</p>
+                {% endif %}
+                {% if trip.start_date %}
+                <p><strong>Dates:</strong> {{ trip.start_date.strftime('%Y-%m-%d') }}
+                {% if trip.end_date and trip.end_date != trip.start_date %}
+                 to {{ trip.end_date.strftime('%Y-%m-%d') }}
+                {% endif %}
+                </p>
+                {% endif %}
+                <p><strong>Gear Items:</strong> {{ trip.gear_items|length }} items</p>
+                {% if trip.notes %}
+                <p><strong>Notes:</strong> {{ trip.notes }}</p>
+                {% endif %}
+            </div>
+            <div style="text-align: right;">
+                <small>Created: {{ trip.created_date.strftime('%Y-%m-%d') }}</small>
+                <br><br>
+                <a href="{{ url_for('trip_detail', trip_id=trip.id) }}" class="btn btn-secondary">View Checklist</a>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+{% else %}
+    <div style="text-align: center; margin: 40px 0;">
+        <h3>No trips planned yet!</h3>
+        <p>Create your first trip and start building your gear checklist.</p>
+        <a href="{{ url_for('create_trip') }}" class="btn">Plan Your First Trip</a>
+    </div>
+{% endif %}
+{% endblock %}

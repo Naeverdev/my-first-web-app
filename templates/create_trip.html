@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>🗓️ Plan New Trip</h1>
+
+<form method="POST">
+    <div class="form-group">
+        <label for="name">Trip Name *</label>
+        <input type="text" id="name" name="name" required placeholder="e.g. Weekend Climbing at Joshua Tree">
+    </div>
+    
+    <div class="form-group">
+        <label for="activity_type">Activity Type *</label>
+        <select id="activity_type" name="activity_type" required>
+            <option value="">Select Activity</option>
+            {% for template in activity_templates %}
+            <option value="{{ template.name }}">{{ template.name }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    
+    <div class="form-group">
+        <label for="location">Location</label>
+        <input type="text" id="location" name="location" placeholder="e.g. Joshua Tree National Park">
+    </div>
+    
+    <div style="display: flex; gap: 20px;">
+        <div class="form-group" style="flex: 1;">
+            <label for="start_date">Start Date</label>
+            <input type="date" id="start_date" name="start_date">
+        </div>
+        
+        <div class="form-group" style="flex: 1;">
+            <label for="end_date">End Date</label>
+            <input type="date" id="end_date" name="end_date">
+        </div>
+    </div>
+    
+    <div class="form-group">
+        <label for="notes">Notes</label>
+        <textarea id="notes" name="notes" rows="3" placeholder="Special considerations, weather, group size, etc..."></textarea>
+    </div>
+    
+    <div style="margin-top: 20px;">
+        <button type="submit" class="btn">Create Trip</button>
+        <a href="{{ url_for('trips') }}" class="btn btn-secondary">Cancel</a>
+    </div>
+</form>
+{% endblock %}

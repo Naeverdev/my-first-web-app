@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>📦 My Gear Inventory</h1>
+
+<div style="margin: 20px 0;">
+    <a href="{{ url_for('gear_list') }}?category=all" class="btn {{ 'btn-secondary' if current_category == 'all' else '' }}">All Categories</a>
+    {% for category in categories %}
+    <a href="{{ url_for('gear_list') }}?category={{ category }}" class="btn {{ 'btn-secondary' if current_category == category else '' }}">{{ category }}</a>
+    {% endfor %}
+</div>
+
+{% if gear %}
+    <p>Showing {{ gear|length }} items {% if current_category != 'all' %}in {{ current_category }}{% endif %}</p>
+    
+    {% for item in gear %}
+    <div class="gear-card">
+        <h3>🔦 {{ item.name }}</h3>
+        <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+            <div style="flex: 1;">
+                <p><strong>Brand:</strong> {{ item.brand or 'Not specified' }}</p>
+                <p><strong>Category:</strong> {{ item.category }}</p>
+                <p><strong>Weight:</strong> {{ item.weight_grams }}g</p>
+                <p><strong>Condition:</strong> {{ item.condition }}</p>
+                {% if item.notes %}
+                <p><strong>Notes:</strong> {{ item.notes }}</p>
+                {% endif %}
+            </div>
+            <div style="text-align: right;">
+                <small>Added: {{ item.date_added.strftime('%Y-%m-%d') }}</small>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+{% else %}
+    <div style="text-align: center; margin: 40px 0;">
+        <h3>No gear found!</h3>
+        <p>Start building your inventory by adding your first item.</p>
+        <a href="{{ url_for('add_gear') }}" class="btn">Add Gear Item</a>
+    </div>
+{% endif %}
+{% endblock %}
