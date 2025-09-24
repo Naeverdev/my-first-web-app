@@ -5,7 +5,7 @@ from datetime import datetime
 
 # Create Flask application
 app = Flask(__name__)
-app.secret_key = 'your-secret-key-change-this'
+app.secret_key = os.environ.get('SECRET_KEY', 'outdoor-gear-manager-2025-secure-key-' + str(hash('your-unique-identifier')))
 
 # Database configuration
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', 'sqlite:///gear.db')
