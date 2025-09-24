@@ -223,6 +223,8 @@ def remove_gear_from_trip(trip_id, gear_id):
 if __name__ == '__main__':
     # Initialize database
     with app.app_context():
+        # Drop and recreate all tables to ensure new structure
+        db.drop_all()
         db.create_all()
         
         # Add sample data if no gear exists
