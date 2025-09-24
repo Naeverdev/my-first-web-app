@@ -28,14 +28,13 @@
     
     {% for item in trip.gear_items %}
     {% set is_packed = packed_status.get(item.id, False) %}
-    <!-- DEBUG: Item {{ item.id }}, Packed: {{ is_packed }}, Status: {{ packed_status }} -->
     <div class="gear-card" style="background: {% if is_packed %}#d4edda{% else %}#fff3cd{% endif %}">
         <div style="display: flex; justify-content: space-between; align-items: center;">
             <div style="display: flex; align-items: center; flex: 1;">
                 <input type="checkbox" style="margin-right: 15px; transform: scale(1.5);" 
                        {% if is_packed %}checked{% endif %} disabled>
                 <div>
-                    <h3 style="{% if is_packed %}text-decoration: line-through; color: #666;{% endif %}">{{ item.name }} (DEBUG: packed={{ is_packed }})</h3>
+                    <h3 style="{% if is_packed %}text-decoration: line-through; color: #666;{% endif %}">{{ item.name }}</h3>
                     <p><strong>Category:</strong> {{ item.category }} | <strong>Weight:</strong> {{ item.weight_grams }}g</p>
                 </div>
             </div>

@@ -15,7 +15,19 @@
     
     {% for item in gear %}
     <div class="gear-card">
-        <h3>🔦 {{ item.name }}</h3>
+        <h3>
+        {% if item.category == 'Lighting' %}💡
+        {% elif item.category == 'Climbing' %}🧗
+        {% elif item.category == 'Shelter' %}⛺
+        {% elif item.category == 'Clothing' %}👕
+        {% elif item.category == 'Cooking' %}🍳
+        {% elif item.category == 'Navigation' %}🧭
+        {% elif item.category == 'Safety' %}🛡️
+        {% elif item.category == 'Hiking' %}🥾
+        {% elif item.category == 'Camping' %}🏕️
+        {% elif item.category == 'Electronics' %}📱
+        {% else %}🎒
+        {% endif %} {{ item.name }}</h3>
         <div style="display: flex; justify-content: space-between; align-items: flex-start;">
             <div style="flex: 1;">
                 <p><strong>Brand:</strong> {{ item.brand or 'Not specified' }}</p>

@@ -64,33 +64,34 @@ class Trip(db.Model):
 @app.route('/init-db')
 def init_database():
     try:
-        # Drop and recreate all tables
-        db.drop_all()
+        # Only create missing tables - keeps existing data!
         db.create_all()
         
-        # Add sample data
-        sample_headlamp = GearItem(
-            name='Black Diamond Spot 400',
-            brand='Black Diamond',
-            category='Lighting',
-            weight_grams=88,
-            condition='Good',
-            notes='Primary headlamp for all activities'
-        )
-        db.session.add(sample_headlamp)
+        # Only add sample data if no gear exists
+        if GearItem.query.count() == 0:
+            sample_headlamp = GearItem(
+                name='Black Diamond Spot 400',
+                brand='Black Diamond',
+                category='Lighting',
+                weight_grams=88,
+                condition='Good',
+                notes='Primary headlamp for all activities'
+            )
+            db.session.add(sample_headlamp)
         
-        # Add basic activity templates
-        activities = [
-            ActivityTemplate(name='Climbing', description='Rock climbing and mountaineering'),
-            ActivityTemplate(name='Camping', description='Overnight camping trips'),
-            ActivityTemplate(name='Hiking', description='Day hikes and backpacking')
-        ]
-        for activity in activities:
-            db.session.add(activity)
+        # Only add activity templates if none exist
+        if ActivityTemplate.query.count() == 0:
+            activities = [
+                ActivityTemplate(name='Climbing', description='Rock climbing and mountaineering'),
+                ActivityTemplate(name='Camping', description='Overnight camping trips'),
+                ActivityTemplate(name='Hiking', description='Day hikes and backpacking')
+            ]
+            for activity in activities:
+                db.session.add(activity)
         
         db.session.commit()
         
-        return "Database initialized successfully! <a href='/'>Go to Home</a>"
+        return "Database updated successfully! <a href='/'>Go to Home</a>"
     except Exception as e:
         return f"Error: {str(e)}"
 
