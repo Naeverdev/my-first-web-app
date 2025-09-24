@@ -64,22 +64,10 @@ class Trip(db.Model):
 @app.route('/init-db')
 def init_database():
     try:
-        # Only create missing tables - keeps existing data!
+        # Create all tables (this might recreate if structure changed)
         db.create_all()
         
-        # Only add sample data if no gear exists
-        if GearItem.query.count() == 0:
-            sample_headlamp = GearItem(
-                name='Black Diamond Spot 400',
-                brand='Black Diamond',
-                category='Lighting',
-                weight_grams=88,
-                condition='Good',
-                notes='Primary headlamp for all activities'
-            )
-            db.session.add(sample_headlamp)
-        
-        # Only add activity templates if none exist
+        # Always ensure activity templates exist
         if ActivityTemplate.query.count() == 0:
             activities = [
                 ActivityTemplate(name='Climbing', description='Rock climbing and mountaineering'),
@@ -88,10 +76,9 @@ def init_database():
             ]
             for activity in activities:
                 db.session.add(activity)
+            db.session.commit()
         
-        db.session.commit()
-        
-        return "Database updated successfully! <a href='/'>Go to Home</a>"
+        return "Database updated successfully! Add your gear at <a href='/gear/add'>Add Gear</a> | <a href='/'>Go to Home</a>"
     except Exception as e:
         return f"Error: {str(e)}"
 
