@@ -1,4 +1,6 @@
 from flask import Flask
+import os
+import datetime
 
 # Create Flask application
 app = Flask(__name__)
@@ -9,7 +11,7 @@ def hello_world():
     <h1>🎉 Hello World!</h1>
     <p>My first web application is running!</p>
     <p>Built with Python Flask</p>
-    <p>Time: ''' + str(__import__('datetime').datetime.now().strftime('%Y-%m-%d %H:%M:%S')) + '''</p>
+    <p>Time: ''' + str(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')) + '''</p>
     <p><a href="/about">About</a> | <a href="/contact">Contact</a></p>
     '''
 
@@ -32,9 +34,11 @@ def contact():
     <a href="/">← Back to Home</a>
     '''
 
-
+@app.route('/health')
+def health():
+    return {'status': 'healthy', 'port': os.environ.get('PORT', 'not set')}
 
 if __name__ == '__main__':
-    import os
     port = int(os.environ.get('PORT', 5000))
+    print(f"Starting Flask app on port {port}")
     app.run(debug=False, host='0.0.0.0', port=port)
