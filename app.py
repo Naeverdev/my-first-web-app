@@ -60,6 +60,82 @@ class Trip(db.Model):
     def __repr__(self):
         return f'<Trip {self.name}>'
 
+@app.route('/debug-db-info')
+def debug_database_info():
+    import os
+    
+    output = ["<style>body{font-family:monospace;}</style>"]
+    output.append("<h2>🔍 DATABASE CONNECTION INFO</h2>")
+    
+    db_url = os.environ.get('DATABASE_URL', 'Not set')
+    output.append(f"<b>DATABASE_URL:</b> {db_url}<br><br>")
+    
+    if db_url.startswith('sqlite'):
+        output.append("📁 <b>Type:</b> SQLite (file-based database)<br>")
+        output.append("💡 <b>Access:</b> File is stored locally on Render server<br>")
+    elif db_url.startswith('postgresql'):
+        output.append("🐘 <b>Type:</b> PostgreSQL<br>")
+        output.append("💡 <b>Access:</b> Can connect directly with psql or pgAdmin<br>")
+    else:
+        output.append(f"❓ <b>Type:</b> Unknown database type<br>")
+    
+    output.append(f"<br><b>SQLAlchemy config:</b> {app.config['SQLALCHEMY_DATABASE_URI']}<br>")
+    
+    output.append("<br><a href='/debug-db'>← View Database Contents</a> | <a href='/'>← Home</a>")
+    return "".join(output)
+
+@app.route('/debug-db')
+def debug_database():
+    from sqlalchemy import text
+    
+    output = ["<style>body{font-family:monospace;}</style>"]
+    output.append("<h2>🗄️ PRODUCTION DATABASE STATUS</h2>")
+    
+    # Gear Items
+    output.append("<h3>📦 GEAR ITEMS</h3>")
+    gear_items = GearItem.query.all()
+    if gear_items:
+        for item in gear_items:
+            output.append(f"ID {item.id}: <b>{item.name}</b> ({item.category}) - {item.weight_grams}g - {item.condition}<br>")
+    else:
+        output.append("No gear items found<br>")
+    
+    # Trips
+    output.append("<h3>🗓️ TRIPS</h3>")
+    trips = Trip.query.all()
+    if trips:
+        for trip in trips:
+            output.append(f"ID {trip.id}: <b>{trip.name}</b> - {trip.activity_type}<br>")
+            output.append(f"  📍 {trip.location or 'No location'}<br>")
+            output.append(f"  🎒 {len(trip.gear_items)} gear items<br>")
+    else:
+        output.append("No trips found<br>")
+    
+    # Activity Templates
+    output.append("<h3>🏃‍♂️ ACTIVITY TEMPLATES</h3>")
+    templates = ActivityTemplate.query.all()
+    for template in templates:
+        output.append(f"ID {template.id}: <b>{template.name}</b> - {template.description}<br>")
+    
+    # Trip-Gear Relationships (Packing Status)
+    output.append("<h3>✅ PACKING STATUS</h3>")
+    try:
+        result = db.session.execute(text("SELECT trip_id, gear_item_id, is_packed FROM trip_gear"))
+        relationships = result.fetchall()
+        if relationships:
+            for row in relationships:
+                trip_name = Trip.query.get(row[0]).name
+                gear_name = GearItem.query.get(row[1]).name
+                packed_status = "✅ PACKED" if row[2] else "⭕ NOT PACKED"
+                output.append(f"Trip '<b>{trip_name}</b>' → {gear_name}: {packed_status}<br>")
+        else:
+            output.append("No trip-gear relationships found<br>")
+    except Exception as e:
+        output.append(f"Error checking packing status: {e}<br>")
+    
+    output.append("<br><a href='/'>← Back to Home</a>")
+    return "".join(output)
+
 # Add this route for production database setup
 @app.route('/init-db')
 def init_database():
@@ -119,6 +195,34 @@ def add_gear():
         return redirect(url_for('gear_list'))
     
     return render_template('add_gear.html')
+
+@app.route('/gear/edit/<int:gear_id>', methods=['GET', 'POST'])
+def edit_gear(gear_id):
+    gear = GearItem.query.get_or_404(gear_id)
+    
+    if request.method == 'POST':
+        gear.name = request.form['name']
+        gear.brand = request.form['brand']
+        gear.category = request.form['category']
+        gear.weight_grams = int(request.form['weight_grams']) if request.form['weight_grams'] else None
+        gear.condition = request.form['condition']
+        gear.notes = request.form['notes']
+        
+        db.session.commit()
+        flash(f'{gear.name} updated successfully!', 'success')
+        return redirect(url_for('gear_list'))
+    
+    return render_template('edit_gear.html', gear=gear)
+
+@app.route('/gear/delete/<int:gear_id>', methods=['POST'])
+def delete_gear(gear_id):
+    gear = GearItem.query.get_or_404(gear_id)
+    gear_name = gear.name
+    
+    db.session.delete(gear)
+    db.session.commit()
+    flash(f'{gear_name} deleted successfully!', 'success')
+    return redirect(url_for('gear_list'))
 
 @app.route('/activities')
 def activities():
